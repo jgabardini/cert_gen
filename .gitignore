@@ -1,0 +1,6 @@
+#virtualenv
+xhtml2pdfenv
+
+#templates e imagenes de kleer
+kleercert
+*.pyc
