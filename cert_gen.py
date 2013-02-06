@@ -4,6 +4,7 @@
 
 from string import Template
 import csv
+import os
 
 from xhtml2pdf import pisa
 import cStringIO as StringIO
@@ -15,6 +16,8 @@ _FIRST_NAME = 'Nombre'
 _LAST_NAME = 'Apellido'
 _COURSE_NAME = 'Curso'
 _TOOK_EXAM = 'Examen'
+
+PDF_PATH = ''
 
 
 def HTML2PDF(data, filename, open=False):
@@ -47,7 +50,11 @@ def generador_csv(csv_file):
 
 
 def generate_filename(type, student):
-    return "Kleer - Certificado %s %s - %s %s.pdf" % (
+    path = PDF_PATH + (
+            '/' if len(PDF_PATH) > 0 and PDF_PATH[-1] != '/' else ''
+            )
+    return "%sKleer - Certificado %s %s - %s %s.pdf" % (
+        path,
         type,
         student[_COURSE_NAME],
         student[_FIRST_NAME],
@@ -73,20 +80,27 @@ def all_students_certificates(students, attendance_tmpl, certification_tmpl):
             certificate_generator(certification_tmpl, "Examen", student)
 
 
-def certificates_generator(input):
-    students = generador_csv(open(input))
+def certificates_generator(student_file):
+    print("Procesando %s con path %s" % (student_file, PDF_PATH) )
+    students = generador_csv(open(student_file))
     with open("template - asistencia.html") as template:
         attendance_tmpl = template.read()
     with open("template - examen.html") as template:
         certification_tmpl = template.read()
+    if (PDF_PATH != '') and not os.path.exists(PDF_PATH):
+        os.makedirs(PDF_PATH)
+
     all_students_certificates(students, attendance_tmpl, certification_tmpl)
 
 
 def help():
     print("""
-Uso: cert_gen <alumnos.csv>
-    csv: separado por comas, con al menos las columnas Curso, Nombre, Apellido
-    utiliza "template - asistencia.html" y "template - examen.html"
+Uso: cert_gen <alumnos.csv> <path_pdf>
+    <alumnos.csv>: lista de alumnos, separado por comas,
+    con al menos las columnas Curso, Nombre, Apellido
+    utiliza "template - asistencia.html"
+    Opcionalmente, si existe la columna Examen, en los casos en que tenga 'si'
+    se genera un pdf adicional utilizando "template - examen.html"
 """)
 
 if __name__ == '__main__':
@@ -95,5 +109,6 @@ if __name__ == '__main__':
     if (len(sys.argv) <= 1):
         help()
     else:
-        print("Procesando %s" % sys.argv[1])
-        certificates_generator(sys.argv[1])
+        student_file = sys.argv[1]
+        PDF_PATH = '' if len(sys.argv) == 2 else sys.argv[2]
+        certificates_generator(student_file)
