@@ -6,6 +6,7 @@ import unittest
 from cert_gen import HTML2PDF, reemplazar, generador_csv
 from cert_gen import generate_filename, certificates_generator
 
+
 class TestGeneradorCertificaciones(unittest.TestCase):
 
     def setUp(self):
@@ -55,19 +56,19 @@ class TestGeneradorCertificaciones(unittest.TestCase):
         self.assertEqual("Hola Juan", modificado)
 
     def test_generador_csv(self):
-        a,b= '1,2,3','4,5,6'
-        for r,e in zip(
-            generador_csv(['a,b,c',a,b]),
-            ({'a':'1','b':'2','c':'3'},{'a':'4','b':'5','c':'6'})
+        a, b = '1,2,3', '4,5,6'
+        for r, e in zip(
+            generador_csv(['a,b,c', a, b]),
+            ({'a': '1', 'b': '2', 'c': '3'}, {'a': '4', 'b': '5', 'c': '6'})
             ):
-            self.assertEqual(r,e)
+            self.assertEqual(r, e)
 
     def test_genera_nombres(self):
         filename = generate_filename(
             "Asistencia",
             {
-                "Apellido":u"Perez",
-                "Nombre":"Juan",
+                "Apellido": u"Perez",
+                "Nombre": "Juan",
                 "Curso": "Introduccion a Scrum"
             }
         )

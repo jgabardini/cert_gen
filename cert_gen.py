@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# Authors: Juan Gabardini y Pablo Tortorella
+#
 
 from string import Template
 import csv
@@ -9,11 +11,11 @@ import cStringIO as StringIO
 # Shortcut for dumping all logs to the screen
 pisa.showLogging()
 
+
 def HTML2PDF(data, filename, open=False):
     """
-    Simple test showing how to create a PDF file from
-    PML Source String. Also shows errors and tries to start
-    the resulting PDF
+    Create a PDF file from PML Source String.
+    Also shows errors and tries to start the resulting PDF
     """
 
     pdf = pisa.CreatePDF(
@@ -25,8 +27,10 @@ def HTML2PDF(data, filename, open=False):
 
     return not pdf.err
 
+
 def reemplazar(base, **kws):
     return Template(base).substitute(kws)
+
 
 def generador_csv(csv_file):
     reader = csv.DictReader(csv_file)
@@ -35,6 +39,7 @@ def generador_csv(csv_file):
             yield row
     except csv.Error, e:
         sys.exit('line %d: %s' % (reader.line_num, e))
+
 
 def generate_filename(type, student):
     return "Kleer - Certificado %s %s - %s %s.pdf" % (
@@ -49,6 +54,7 @@ def certificate_generator(html, type, student):
     certificado = reemplazar(base=html, **student)
     HTML2PDF(certificado, generate_filename(type, student), open=False)
 
+
 def certificates_generator(input):
     alumnos = generador_csv(open(input))
     with open("template - asistencia.html") as template:
@@ -58,14 +64,22 @@ def certificates_generator(input):
 
     for alumno in alumnos:
         certificate_generator(html_asistencia, "Asistencia", alumno)
-        if alumno["Examen"].lower()=="si":
+        if alumno["Examen"].lower() == "si":
             certificate_generator(html_examen, "Examen", alumno)
+
+
+def help():
+    print("""
+Uso: cert_gen <alumnos.csv>
+    csv: separado por comas, con al menos las columnas Curso, Nombre, Apellido
+    utiliza "template - asistencia.html" y "template - examen.html"
+""")
 
 if __name__ == '__main__':
     import sys
 
     if (len(sys.argv) <= 1):
-        print "Uso: cert_gen <alumnos.csv>"
+        help()
     else:
         print("Procesando %s" % sys.argv[1])
         certificates_generator(sys.argv[1])

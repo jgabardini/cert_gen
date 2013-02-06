@@ -4,3 +4,8 @@ xhtml2pdfenv
 #templates e imagenes de kleer
 kleercert
 *.pyc
+*.pdf
+templates/*
+
+#editor aux files
+.ropeproject
