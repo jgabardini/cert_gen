@@ -11,6 +11,11 @@ import cStringIO as StringIO
 # Shortcut for dumping all logs to the screen
 pisa.showLogging()
 
+_FIRST_NAME = 'Nombre'
+_LAST_NAME = 'Apellido'
+_COURSE_NAME = 'Curso'
+_TOOK_EXAM = 'Examen'
+
 
 def HTML2PDF(data, filename, open=False):
     """
@@ -44,9 +49,9 @@ def generador_csv(csv_file):
 def generate_filename(type, student):
     return "Kleer - Certificado %s %s - %s %s.pdf" % (
         type,
-        student["Curso"],
-        student["Nombre"],
-        student["Apellido"]
+        student[_COURSE_NAME],
+        student[_FIRST_NAME],
+        student[_LAST_NAME]
     )
 
 
@@ -55,17 +60,26 @@ def certificate_generator(html, type, student):
     HTML2PDF(certificado, generate_filename(type, student), open=False)
 
 
-def certificates_generator(input):
-    alumnos = generador_csv(open(input))
-    with open("template - asistencia.html") as template:
-        html_asistencia = template.read()
-    with open("template - examen.html") as template:
-        html_examen = template.read()
+def all_students_certificates(students, attendance_tmpl, certification_tmpl):
+    """
+    Generate one or two pdf for each student
+    Expect
+        a iterable with a dict for each student
+        two html templates
+    """
+    for student in students:
+        certificate_generator(attendance_tmpl, "Asistencia", student)
+        if _TOOK_EXAM in student and student[_TOOK_EXAM].lower() == "si":
+            certificate_generator(certification_tmpl, "Examen", student)
 
-    for alumno in alumnos:
-        certificate_generator(html_asistencia, "Asistencia", alumno)
-        if alumno["Examen"].lower() == "si":
-            certificate_generator(html_examen, "Examen", alumno)
+
+def certificates_generator(input):
+    students = generador_csv(open(input))
+    with open("template - asistencia.html") as template:
+        attendance_tmpl = template.read()
+    with open("template - examen.html") as template:
+        certification_tmpl = template.read()
+    all_students_certificates(students, attendance_tmpl, certification_tmpl)
 
 
 def help():

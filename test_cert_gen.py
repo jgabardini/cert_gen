@@ -5,7 +5,7 @@ import unittest
 
 from cert_gen import HTML2PDF, reemplazar, generador_csv
 from cert_gen import generate_filename, certificates_generator
-
+from cert_gen import all_students_certificates
 
 class TestGeneradorCertificaciones(unittest.TestCase):
 
@@ -80,6 +80,12 @@ class TestGeneradorCertificaciones(unittest.TestCase):
             os.remove(self.filename)
         certificates_generator(input)
         self.assertTrue(os.path.isfile(self.filename), self.filename)
+
+    def test_no_tiene_columna_examen(self):
+        students = [{'Curso': '', 'Nombre': '', 'Apellido': ''}]
+        attendance_tmpl, certification_tmpl = '', ''
+        all_students_certificates(students, attendance_tmpl, certification_tmpl)
+        self.assertTrue(True)
 
 if __name__ == '__main__':
     unittest.main()
