@@ -103,6 +103,15 @@ Uso: cert_gen <alumnos.csv> <path_pdf>
     se genera un pdf adicional utilizando "template - examen.html"
 """)
 
+
+class Certificate():
+    "create a pdf using templates and variables"
+    def __init__(self):
+        self.template = ''
+
+    def replace_variables(self, **kws):
+        return Template(self.template).substitute(kws)
+
 if __name__ == '__main__':
     import sys
 

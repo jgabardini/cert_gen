@@ -7,6 +7,9 @@ from cert_gen import HTML2PDF, reemplazar, generador_csv
 from cert_gen import generate_filename, certificates_generator
 from cert_gen import all_students_certificates
 
+from cert_gen import Certificate
+
+
 class TestGeneradorCertificaciones(unittest.TestCase):
 
     def setUp(self):
@@ -43,14 +46,17 @@ class TestGeneradorCertificaciones(unittest.TestCase):
         HTML2PDF(self.HTMLTEST, out, open=False)
         self.assertTrue(os.path.isfile(out))
 
+    #movido
     def test_reemplaza_variable(self):
         modificado = reemplazar("Hola $nombre", nombre="Juan")
         self.assertEqual("Hola Juan", modificado)
 
+    #movido
     def test_reemplaza_variable_desconocida(self):
         with self.assertRaises(KeyError):
             reemplazar("Hola $nombre", pepe="Juan")
 
+    #movido
     def test_reemplaza_2_variables(self):
         modificado = reemplazar("$que $nombre", nombre="Juan", que="Hola")
         self.assertEqual("Hola Juan", modificado)
@@ -86,6 +92,28 @@ class TestGeneradorCertificaciones(unittest.TestCase):
         attendance_tmpl, certification_tmpl = '', ''
         all_students_certificates(students, attendance_tmpl, certification_tmpl)
         self.assertTrue(True)
+
+
+class TestCertificate(unittest.TestCase):
+    def test_replace_one_variable(self):
+        certificate = Certificate()
+        certificate.template = "Are you $nombre?"
+        modified = certificate.replace_variables(nombre="Juan")
+        self.assertEqual("Are you Juan?", modified)
+
+    def test_unknow_variable_raise_exception(self):
+        certificate = Certificate()
+        certificate.template = "Hola $nombre"
+        with self.assertRaises(KeyError):
+            certificate.replace_variables(pepe="Juan")
+
+    def test_replace_2_variables(self):
+        certificate = Certificate()
+        certificate.template = "$que $nombre"
+        modified = certificate.replace_variables(nombre="Juan", que="Hi")
+        self.assertEqual("Hi Juan", modified)
+
+
 
 if __name__ == '__main__':
     unittest.main()
