@@ -20,24 +20,24 @@ _TOOK_EXAM = 'Examen'
 PDF_PATH = ''
 
 
-def HTML2PDF(data, filename, open=False):
-    """
-    Create a PDF file from PML Source String.
-    Also shows errors and tries to start the resulting PDF
-    """
+# def HTML2PDF(data, filename, open=False):
+#     """
+#     Create a PDF file from PML Source String.
+#     Also shows errors and tries to start the resulting PDF
+#     """
 
-    pdf = pisa.CreatePDF(
-        StringIO.StringIO(data),
-        file(filename, "wb"))
+#     pdf = pisa.CreatePDF(
+#         StringIO.StringIO(data),
+#         file(filename, "wb"))
 
-    if open and (not pdf.err):
-        pisa.startViewer(filename)
+#     if open and (not pdf.err):
+#         pisa.startViewer(filename)
 
-    return not pdf.err
+#     return not pdf.err
 
 
-def reemplazar(base, **kws):
-    return Template(base).substitute(kws)
+# def reemplazar(base, **kws):
+#     return Template(base).substitute(kws)
 
 
 def generador_csv(csv_file):
@@ -63,8 +63,13 @@ def generate_filename(type, student):
 
 
 def certificate_generator(html, type, student):
-    certificado = reemplazar(base=html, **student)
-    HTML2PDF(certificado, generate_filename(type, student), open=False)
+    # certificado = reemplazar(base=html, **student)
+    # HTML2PDF(certificado, generate_filename(type, student), open=False)
+    certificate = Certificate()
+    certificate.template = html
+    certificate.replace_variables(**student)
+    certificate.output_file = generate_filename(type, student)
+    certificate.generate()
 
 
 def all_students_certificates(students, attendance_tmpl, certification_tmpl):
@@ -81,7 +86,7 @@ def all_students_certificates(students, attendance_tmpl, certification_tmpl):
 
 
 def certificates_generator(student_file):
-    print("Procesando %s con path %s" % (student_file, PDF_PATH) )
+    print("Procesando %s con path %s" % (student_file, PDF_PATH))
     students = generador_csv(open(student_file))
     with open("template - asistencia.html") as template:
         attendance_tmpl = template.read()
@@ -108,9 +113,27 @@ class Certificate():
     "create a pdf using templates and variables"
     def __init__(self):
         self.template = ''
+        self.output_file = ''
+        self.output = ''
 
     def replace_variables(self, **kws):
-        return Template(self.template).substitute(kws)
+        if len(kws) == 0:
+            self.output = self.template
+        else:
+            self.output = Template(self.template).substitute(kws)
+
+        return self.output
+
+    def generate(self):
+        if self.output == '':
+            self.replace_variables()
+        pdf = pisa.CreatePDF(
+                StringIO.StringIO(self.output),
+                file(self.output_file, "wb")
+                )
+
+        return not pdf.err
+
 
 if __name__ == '__main__':
     import sys
