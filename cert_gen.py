@@ -5,6 +5,7 @@
 from string import Template
 import csv
 import os
+import argparse
 
 from xhtml2pdf import pisa
 import cStringIO as StringIO
@@ -114,11 +115,24 @@ class Certificate():
 
 
 if __name__ == '__main__':
-    import sys
+    parser = argparse.ArgumentParser(
+        description="""Create one or two pdf for each student
+    \n
+    Utiliza "template - asistencia.html"
+    Opcionalmente, si existe la columna Examen, en los casos en que tenga 'si'
+    se genera un pdf adicional utilizando "template - examen.html"
 
-    if (len(sys.argv) <= 1):
-        help()
-    else:
-        student_file = sys.argv[1]
-        PDF_PATH = '' if len(sys.argv) == 2 else sys.argv[2]
-        certificates_generator(student_file)
+        """
+        )
+
+    parser.add_argument('students', help="""
+csv de alumnos, con al menos las columnas Curso, Nombre, Apellido
+        """)
+
+    parser.add_argument('-o', '--output_path', default='',
+        help='folder where the pdf will be created'
+        )
+
+    args = parser.parse_args()
+    PDF_PATH = args.output_path
+    certificates_generator(args.students)
