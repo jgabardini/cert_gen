@@ -3,7 +3,6 @@
 import os.path
 import unittest
 
-# from cert_gen import HTML2PDF, reemplazar
 from cert_gen import generador_csv
 from cert_gen import generate_filename, certificates_generator
 from cert_gen import all_students_certificates
@@ -15,54 +14,6 @@ class TestGeneradorCertificaciones(unittest.TestCase):
 
     def setUp(self):
         self.filename = u"Kleer - Certificado Asistencia Introduccion a Scrum - Juan Perez.pdf"
-
-    # #movido
-    #     self.HTMLTEST = """
-    # <html><body>
-    # <p>Hello <strong style="color: #f00;">World</strong>
-    # <hr>
-    # <table border="1" style="background: #eee; padding: 0.5em;">
-    #     <tr>
-    #         <td>$Amount</td>
-    #         <td>$Description</td>
-    #         <td>Total</td>
-    #     </tr>
-    #     <tr>
-    #         <td>1</td>
-    #         <td>Good weather</td>
-    #         <td>0 EUR</td>
-    #     </tr>
-    #     <tr style="font-weight: bold">
-    #         <td colspan="2" align="right">Sum</td>
-    #         <td>0 EUR</td>
-    #     </tr>
-    # </table>
-    # </body></html>
-    # """
-
-    # #movido
-    # def test_genera_pdf(self):
-    #     # comprueba que genere un archivo pdf
-    #     out = "test.pdf"
-    #     if os.path.isfile(out):
-    #         os.remove(out)
-    #     HTML2PDF(self.HTMLTEST, out, open=False)
-    #     self.assertTrue(os.path.isfile(out))
-
-    # #movido
-    # def test_reemplaza_variable(self):
-    #     modificado = reemplazar("Hola $nombre", nombre="Juan")
-    #     self.assertEqual("Hola Juan", modificado)
-
-    # #movido
-    # def test_reemplaza_variable_desconocida(self):
-    #     with self.assertRaises(KeyError):
-    #         reemplazar("Hola $nombre", pepe="Juan")
-
-    # #movido
-    # def test_reemplaza_2_variables(self):
-    #     modificado = reemplazar("$que $nombre", nombre="Juan", que="Hola")
-    #     self.assertEqual("Hola Juan", modificado)
 
     def test_generador_csv(self):
         a, b = '1,2,3', '4,5,6'

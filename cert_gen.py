@@ -20,26 +20,6 @@ _TOOK_EXAM = 'Examen'
 PDF_PATH = ''
 
 
-# def HTML2PDF(data, filename, open=False):
-#     """
-#     Create a PDF file from PML Source String.
-#     Also shows errors and tries to start the resulting PDF
-#     """
-
-#     pdf = pisa.CreatePDF(
-#         StringIO.StringIO(data),
-#         file(filename, "wb"))
-
-#     if open and (not pdf.err):
-#         pisa.startViewer(filename)
-
-#     return not pdf.err
-
-
-# def reemplazar(base, **kws):
-#     return Template(base).substitute(kws)
-
-
 def generador_csv(csv_file):
     reader = csv.DictReader(csv_file)
     try:
@@ -63,8 +43,6 @@ def generate_filename(type, student):
 
 
 def certificate_generator(html, type, student):
-    # certificado = reemplazar(base=html, **student)
-    # HTML2PDF(certificado, generate_filename(type, student), open=False)
     certificate = Certificate()
     certificate.template = html
     certificate.replace_variables(**student)
