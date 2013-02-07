@@ -38,6 +38,7 @@ class TestGeneradorCertificaciones(unittest.TestCase):
     </body></html>
     """
 
+    #movido
     def test_genera_pdf(self):
         # comprueba que genere un archivo pdf
         out = "test.pdf"
@@ -93,8 +94,13 @@ class TestGeneradorCertificaciones(unittest.TestCase):
         all_students_certificates(students, attendance_tmpl, certification_tmpl)
         self.assertTrue(True)
 
+### Unit Tests ####
+
 
 class TestCertificate(unittest.TestCase):
+    def setUp(self):
+        self.certificate = Certificate()
+
     def test_replace_one_variable(self):
         certificate = Certificate()
         certificate.template = "Are you $nombre?"
@@ -113,6 +119,13 @@ class TestCertificate(unittest.TestCase):
         modified = certificate.replace_variables(nombre="Juan", que="Hi")
         self.assertEqual("Hi Juan", modified)
 
+    def test_generate_create_a_pdf(self):
+        self.certificate.template = self.HTMLTEST
+        self.output_file = "test.pdf"
+        if os.path.isfile(self.output_file):
+            os.remove(self.output_file)
+        self.certificate.generate()
+        self.assertTrue(os.path.isfile(self.output_file))
 
 
 if __name__ == '__main__':
