@@ -110,10 +110,11 @@ class IntegrationTest(unittest.TestCase):
             "Introduccion a Scrum - Juan Perez.pdf")
         attendant = "test_attendant_tmpl.html"
         certified = "test_certified_tmpl.html"
+        output_path = ''
         if os.path.isfile(out):
             os.remove(out)
 
-        certificates_generator(input)
+        certificates_generator(input, attendant, certified, output_path)
         self.assertTrue(os.path.isfile(out), out)
 
 
