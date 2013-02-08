@@ -77,17 +77,6 @@ def certificates_generator(student_file):
     all_students_certificates(students, attendance_tmpl, certification_tmpl)
 
 
-def help():
-    print("""
-Uso: cert_gen <alumnos.csv> <path_pdf>
-    <alumnos.csv>: lista de alumnos, separado por comas,
-    con al menos las columnas Curso, Nombre, Apellido
-    utiliza "template - asistencia.html"
-    Opcionalmente, si existe la columna Examen, en los casos en que tenga 'si'
-    se genera un pdf adicional utilizando "template - examen.html"
-""")
-
-
 class Certificate():
     "create a pdf using templates and variables"
     def __init__(self):
@@ -126,11 +115,20 @@ if __name__ == '__main__':
         )
 
     parser.add_argument('students', help="""
-csv de alumnos, con al menos las columnas Curso, Nombre, Apellido
-        """)
+        csv de alumnos, con al menos las columnas Curso, Nombre, Apellido
+        """
+        )
 
     parser.add_argument('-o', '--output_path', default='',
         help='folder where the pdf will be created'
+        )
+
+    parser.add_argument('-a', '--attendant', default='attendant_tmpl.html',
+        help='html template for attendant'
+        )
+
+    parser.add_argument('-c', '--certified', default='certified_tmpl.html',
+        help='html template for a certification'
         )
 
     args = parser.parse_args()

@@ -12,9 +12,6 @@ from cert_gen import Certificate
 
 class TestGeneradorCertificaciones(unittest.TestCase):
 
-    def setUp(self):
-        self.filename = u"Kleer - Certificado Asistencia Introduccion a Scrum - Juan Perez.pdf"
-
     def test_generador_csv(self):
         a, b = '1,2,3', '4,5,6'
         for r, e in zip(
@@ -32,14 +29,11 @@ class TestGeneradorCertificaciones(unittest.TestCase):
                 "Curso": "Introduccion a Scrum"
             }
         )
-        self.assertEqual(self.filename, filename)
-
-    def test_integracion_basica(self):
-        input = "input.csv"
-        if os.path.isfile(self.filename):
-            os.remove(self.filename)
-        certificates_generator(input)
-        self.assertTrue(os.path.isfile(self.filename), self.filename)
+        self.assertEqual(
+            filename,
+            u"Kleer - Certificado Asistencia Introduccion a Scrum" +
+            " - Juan Perez.pdf"
+            )
 
     def test_no_tiene_columna_examen(self):
         students = [{'Curso': '', 'Nombre': '', 'Apellido': ''}]
@@ -103,6 +97,24 @@ class TestCertificate(unittest.TestCase):
         ok = self.certificate.generate()
         self.assertTrue(ok)
         self.assertTrue(os.path.isfile(out))
+
+
+### Integration Tests ####
+
+
+class IntegrationTest(unittest.TestCase):
+
+    def test_integracion_basica(self):
+        input = "input.csv"
+        out = ("Kleer - Certificado Asistencia " +
+            "Introduccion a Scrum - Juan Perez.pdf")
+        attendant = "test_attendant_tmpl.html"
+        certified = "test_certified_tmpl.html"
+        if os.path.isfile(out):
+            os.remove(out)
+
+        certificates_generator(input)
+        self.assertTrue(os.path.isfile(out), out)
 
 
 if __name__ == '__main__':
