@@ -64,12 +64,12 @@ def all_students_certificates(students, attendance_tmpl, certification_tmpl):
             certificate_generator(certification_tmpl, "Examen", student)
 
 
-def certificates_generator(student_file):
+def certificates_generator(student_file, attended_tmpl, certified_tmpl, output_path):
     print("Procesando %s con path %s" % (student_file, PDF_PATH))
     students = generador_csv(open(student_file))
-    with open("template - asistencia.html") as template:
+    with open(attended_tmpl) as template:
         attendance_tmpl = template.read()
-    with open("template - examen.html") as template:
+    with open(certified_tmpl) as template:
         certification_tmpl = template.read()
     if (PDF_PATH != '') and not os.path.exists(PDF_PATH):
         os.makedirs(PDF_PATH)
@@ -79,10 +79,19 @@ def certificates_generator(student_file):
 
 class Certificate():
     "create a pdf using templates and variables"
-    def __init__(self):
-        self.template = ''
+    def __init__(self, output_path='', template=None):
+        if template:
+            with open(template) as template_file:
+                self.template = template_file.read()
+        else:
+            self.template = ''
+
         self.output_file = ''
         self.output = ''
+        if (output_path != '') and not os.path.exists(output_path):
+            os.makedirs(output_path)
+        self.output_path = output_path
+
 
     def replace_variables(self, **kws):
         if len(kws) == 0:
@@ -123,8 +132,8 @@ if __name__ == '__main__':
         help='folder where the pdf will be created'
         )
 
-    parser.add_argument('-a', '--attendant', default='attendant_tmpl.html',
-        help='html template for attendant'
+    parser.add_argument('-a', '--attended', default='attended_tmpl.html',
+        help='html template for attended'
         )
 
     parser.add_argument('-c', '--certified', default='certified_tmpl.html',

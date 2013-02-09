@@ -2,6 +2,7 @@
 
 import os.path
 import unittest
+import shutil
 
 from cert_gen import generador_csv
 from cert_gen import generate_filename, certificates_generator
@@ -98,6 +99,18 @@ class TestCertificate(unittest.TestCase):
         self.assertTrue(ok)
         self.assertTrue(os.path.isfile(out))
 
+    def test_make_output_dir(self):
+        folder = "here"
+        if os.path.exists(folder):
+            shutil.rmtree(folder)
+        Certificate(output_path=folder)
+        self.assertTrue(os.path.isdir(folder))
+
+    def test_read_templates_file(self):
+        attended = "attended_tmpl.html"
+        certificate = Certificate(template=attended)
+        self.assertIn('<html>', certificate.template)
+
 
 ### Integration Tests ####
 
@@ -108,13 +121,13 @@ class IntegrationTest(unittest.TestCase):
         input = "input.csv"
         out = ("Kleer - Certificado Asistencia " +
             "Introduccion a Scrum - Juan Perez.pdf")
-        attendant = "test_attendant_tmpl.html"
-        certified = "test_certified_tmpl.html"
+        attended = "attended_tmpl.html"
+        certified = "certified_tmpl.html"
         output_path = ''
         if os.path.isfile(out):
             os.remove(out)
 
-        certificates_generator(input, attendant, certified, output_path)
+        certificates_generator(input, attended, certified, output_path)
         self.assertTrue(os.path.isfile(out), out)
 
 
