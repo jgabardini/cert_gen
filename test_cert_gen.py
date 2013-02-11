@@ -4,9 +4,12 @@ import os.path
 import unittest
 import shutil
 
+from mock import MagicMock, create_autospec
+
 from cert_gen import generador_csv
 from cert_gen import generate_filename, certificates_generator
 from cert_gen import all_students_certificates
+from cert_gen import all_students_certificates2
 
 from cert_gen import Certificate
 
@@ -42,30 +45,37 @@ class TestGeneradorCertificaciones(unittest.TestCase):
         all_students_certificates(students, attendance_tmpl, certification_tmpl)
         self.assertTrue(True)
 
+    def test_one_attended(self):
+        students = [{'Curso': '', 'Nombre': '', 'Apellido': ''}]
+        attended_cert = create_autospec(Certificate)
+        certified_cert = create_autospec(Certificate)
+        all_students_certificates2(students, attended_cert, certified_cert)
+        self.assertTrue(attended_cert.generate.called)
+        self.assertFalse(certified_cert.generate.called)
+
+
 ### Unit Tests ####
 
 
 class TestCertificate(unittest.TestCase):
     def setUp(self):
         self.certificate = Certificate()
+        self.student = {
+                "Apellido": u"Perez",
+                "Nombre": "Juan",
+                "Curso": "Introduccion a Scrum",
+                "Email": "pepe@jose.com"
+            }
+
         self.HTMLTEST = """
     <html><body>
     <p>Hello <strong style="color: #f00;">World</strong>
     <hr>
     <table border="1" style="background: #eee; padding: 0.5em;">
         <tr>
-            <td>$Amount</td>
-            <td>$Description</td>
-            <td>Total</td>
-        </tr>
-        <tr>
-            <td>1</td>
-            <td>Good weather</td>
-            <td>0 EUR</td>
-        </tr>
-        <tr style="font-weight: bold">
-            <td colspan="2" align="right">Sum</td>
-            <td>0 EUR</td>
+            <td>$Apellido</td>
+            <td>$Nombre</td>
+            <td>$Curso</td>
         </tr>
     </table>
     </body></html>
@@ -95,9 +105,9 @@ class TestCertificate(unittest.TestCase):
         self.certificate.output_file = out
         if os.path.isfile(out):
             os.remove(out)
-        ok = self.certificate.generate()
+        ok = self.certificate.generate(**self.student)
         self.assertTrue(ok)
-        self.assertTrue(os.path.isfile(out))
+        self.assertTrue(os.path.isfile(out), "Not found {}".format(out))
 
     def test_make_output_dir(self):
         folder = "here"
@@ -110,6 +120,23 @@ class TestCertificate(unittest.TestCase):
         attended = "attended_tmpl.html"
         certificate = Certificate(template=attended)
         self.assertIn('<html>', certificate.template)
+
+    def test_type_in_filename(self):
+        certificate = Certificate(
+            template="attended_tmpl.html",
+            type="Asistencia"
+            )
+        certificate.generate(
+                Apellido=u"Perez",
+                Nombre="Juan",
+                Curso="Introduccion a Scrum",
+                Email="pepe@jose.com"
+        )
+        self.assertEqual(
+            certificate.output_file,
+            u"Kleer - Certificado Asistencia Introduccion a Scrum" +
+            " - Juan Perez.pdf"
+            )
 
 
 ### Integration Tests ####

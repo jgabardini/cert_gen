@@ -5,6 +5,7 @@
 from string import Template
 import csv
 import os
+import sys
 import argparse
 
 from xhtml2pdf import pisa
@@ -46,9 +47,8 @@ def generate_filename(type, student):
 def certificate_generator(html, type, student):
     certificate = Certificate()
     certificate.template = html
-    certificate.replace_variables(**student)
     certificate.output_file = generate_filename(type, student)
-    certificate.generate()
+    certificate.generate(**student)
 
 
 def all_students_certificates(students, attendance_tmpl, certification_tmpl):
@@ -64,9 +64,30 @@ def all_students_certificates(students, attendance_tmpl, certification_tmpl):
             certificate_generator(certification_tmpl, "Examen", student)
 
 
-def certificates_generator(student_file, attended_tmpl, certified_tmpl, output_path):
-    print("Procesando %s con path %s" % (student_file, PDF_PATH))
-    students = generador_csv(open(student_file))
+def all_students_certificates2(students, attended_cert, certified_cert):
+    """
+    Generate one or two pdf for each student
+    Expect
+        a iterable with a dict for each student
+        two html templates
+    """
+    for student in students:
+        attended_cert.generate(**student)
+        if _TOOK_EXAM in student and student[_TOOK_EXAM].lower() == "si":
+            attended_cert.generate(**student)
+
+
+def certificates_generator(
+        students_file,
+        attended_tmpl,
+        certified_tmpl,
+        output_path
+        ):
+
+    PDF_PATH = output_path
+
+    print("Procesando %s con path %s" % (students_file, PDF_PATH))
+    students = generador_csv(open(students_file))
     with open(attended_tmpl) as template:
         attendance_tmpl = template.read()
     with open(certified_tmpl) as template:
@@ -77,9 +98,10 @@ def certificates_generator(student_file, attended_tmpl, certified_tmpl, output_p
     all_students_certificates(students, attendance_tmpl, certification_tmpl)
 
 
+#TODO: TYPE "Asistencia", "Examen"
 class Certificate():
     "create a pdf using templates and variables"
-    def __init__(self, output_path='', template=None):
+    def __init__(self, output_path='', template=None, type=''):
         if template:
             with open(template) as template_file:
                 self.template = template_file.read()
@@ -88,10 +110,10 @@ class Certificate():
 
         self.output_file = ''
         self.output = ''
+        self.type = type
         if (output_path != '') and not os.path.exists(output_path):
             os.makedirs(output_path)
         self.output_path = output_path
-
 
     def replace_variables(self, **kws):
         if len(kws) == 0:
@@ -101,9 +123,10 @@ class Certificate():
 
         return self.output
 
-    def generate(self):
-        if self.output == '':
-            self.replace_variables()
+    def generate(self, **kws):
+        if (not self.output_file):
+            self.output_file = generate_filename(self.type, kws)
+        self.replace_variables(**kws)
         pdf = pisa.CreatePDF(
                 StringIO.StringIO(self.output),
                 file(self.output_file, "wb")
@@ -141,5 +164,9 @@ if __name__ == '__main__':
         )
 
     args = parser.parse_args()
-    PDF_PATH = args.output_path
-    certificates_generator(args.students)
+    certificates_generator(
+        students_file = args.students,
+        attended_tmpl = args.attended,
+        certified_tmpl =args.certified,
+        output_path = args.output_path
+        )
