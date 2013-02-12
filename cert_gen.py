@@ -44,13 +44,6 @@ def generate_filename(type, student):
     )
 
 
-def certificate_generator(html, type, student):
-    certificate = Certificate()
-    certificate.template = html
-    certificate.output_file = generate_filename(type, student)
-    certificate.generate(**student)
-
-
 def all_students_certificates(students, attended_cert, certified_cert):
     """
     Generate one or two pdf for each student
@@ -71,6 +64,7 @@ def certificates_generator(
         output_path
         ):
 
+    global PDF_PATH
     PDF_PATH = output_path
 
     print("Procesando %s con path %s" % (students_file, PDF_PATH))
