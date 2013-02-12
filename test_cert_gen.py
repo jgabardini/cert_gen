@@ -8,8 +8,7 @@ from mock import create_autospec
 
 from cert_gen import generador_csv
 from cert_gen import generate_filename, certificates_generator
-# from cert_gen import all_students_certificates
-from cert_gen import all_students_certificates2
+from cert_gen import all_students_certificates
 
 from cert_gen import Certificate
 
@@ -41,17 +40,15 @@ class TestGeneradorCertificaciones(unittest.TestCase):
 
     def test_no_tiene_columna_examen(self):
         students = [{'Curso': '', 'Nombre': '', 'Apellido': ''}]
-        # attendance_tmpl, certification_tmpl = '', ''
-        # all_students_certificates(students, attendance_tmpl, certification_tmpl)
         attended_cert = create_autospec(Certificate)
-        all_students_certificates2(students, attended_cert, None)
+        all_students_certificates(students, attended_cert, None)
         self.assertTrue(True)
 
     def test_one_attended(self):
         students = [{'Curso': '', 'Nombre': '', 'Apellido': ''}]
         attended_cert = create_autospec(Certificate)
         certified_cert = create_autospec(Certificate)
-        all_students_certificates2(students, attended_cert, certified_cert)
+        all_students_certificates(students, attended_cert, certified_cert)
         self.assertTrue(attended_cert.generate.called)
         self.assertFalse(certified_cert.generate.called)
 
@@ -128,14 +125,14 @@ class TestCertificate(unittest.TestCase):
             template="attended_tmpl.html",
             type="Asistencia"
             )
-        certificate.generate(
+        output_file = certificate.generate(
                 Apellido=u"Perez",
                 Nombre="Juan",
                 Curso="Introduccion a Scrum",
                 Email="pepe@jose.com"
         )
         self.assertEqual(
-            certificate.output_file,
+            output_file,
             u"Kleer - Certificado Asistencia Introduccion a Scrum" +
             " - Juan Perez.pdf"
             )
