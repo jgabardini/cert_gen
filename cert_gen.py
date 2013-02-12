@@ -51,7 +51,7 @@ def certificate_generator(html, type, student):
     certificate.generate(**student)
 
 
-def all_students_certificates(students, attendance_tmpl, certification_tmpl):
+def x_all_students_certificates(students, attendance_tmpl, certification_tmpl):
     """
     Generate one or two pdf for each student
     Expect
@@ -74,10 +74,10 @@ def all_students_certificates2(students, attended_cert, certified_cert):
     for student in students:
         attended_cert.generate(**student)
         if _TOOK_EXAM in student and student[_TOOK_EXAM].lower() == "si":
-            attended_cert.generate(**student)
+            certified_cert.generate(**student)
 
 
-def certificates_generator(
+def x_certificates_generator(
         students_file,
         attended_tmpl,
         certified_tmpl,
@@ -95,10 +95,33 @@ def certificates_generator(
     if (PDF_PATH != '') and not os.path.exists(PDF_PATH):
         os.makedirs(PDF_PATH)
 
-    all_students_certificates(students, attendance_tmpl, certification_tmpl)
+    # all_students_certificates(students, attendance_tmpl, certification_tmpl)
 
 
-#TODO: TYPE "Asistencia", "Examen"
+def certificates_generator(
+        students_file,
+        attended_tmpl,
+        certified_tmpl,
+        output_path
+        ):
+
+    PDF_PATH = output_path
+
+    print("Procesando %s con path %s" % (students_file, PDF_PATH))
+    students = generador_csv(open(students_file))
+    attended_cert = Certificate(
+            output_path=output_path,
+            template=attended_tmpl,
+            type='Asistencia'
+        )
+    certified_cert = Certificate(
+            output_path=output_path,
+            template=certified_tmpl,
+            type='Examen'
+        )
+    all_students_certificates2(students, attended_cert, certified_cert)
+
+
 class Certificate():
     "create a pdf using templates and variables"
     def __init__(self, output_path='', template=None, type=''):
@@ -124,14 +147,12 @@ class Certificate():
         return self.output
 
     def generate(self, **kws):
-        if (not self.output_file):
-            self.output_file = generate_filename(self.type, kws)
+        self.output_file = generate_filename(self.type, kws)
         self.replace_variables(**kws)
         pdf = pisa.CreatePDF(
                 StringIO.StringIO(self.output),
                 file(self.output_file, "wb")
                 )
-
         return not pdf.err
 
 
