@@ -27,14 +27,14 @@ class TestGeneradorCertificaciones(unittest.TestCase):
         filename = generate_filename(
             "Asistencia",
             {
-                "Apellido": u"Perez",
+                "Apellido": "Perez",
                 "Nombre": "Juan",
                 "Curso": "Introduccion a Scrum"
             }
         )
         self.assertEqual(
             filename,
-            u"Kleer - Certificado Asistencia Introduccion a Scrum" +
+            "Kleer - Certificado Asistencia Introduccion a Scrum" +
             " - Juan Perez.pdf"
             )
 
@@ -60,7 +60,7 @@ class TestCertificate(unittest.TestCase):
     def setUp(self):
         self.certificate = Certificate()
         self.student = {
-                "Apellido": u"Perez",
+                "Apellido": "Perez",
                 "Nombre": "Juan",
                 "Curso": "Introduccion a Scrum",
                 "Email": "pepe@jose.com"
@@ -126,14 +126,14 @@ class TestCertificate(unittest.TestCase):
             type="Asistencia"
             )
         output_file = certificate.generate(
-                Apellido=u"Perez",
+                Apellido="Perez",
                 Nombre="Juan",
                 Curso="Introduccion a Scrum",
                 Email="pepe@jose.com"
         )
         self.assertEqual(
             output_file,
-            u"Kleer - Certificado Asistencia Introduccion a Scrum" +
+            "Kleer - Certificado Asistencia Introduccion a Scrum" +
             " - Juan Perez.pdf"
             )
 

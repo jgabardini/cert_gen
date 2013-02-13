@@ -27,7 +27,7 @@ def generador_csv(csv_file):
     try:
         for row in reader:
             yield row
-    except csv.Error, e:
+    except csv.Error as e:
         sys.exit('line %d: %s' % (reader.line_num, e))
 
 

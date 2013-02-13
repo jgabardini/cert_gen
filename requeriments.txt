@@ -1,0 +1,9 @@
+PIL==1.1.7
+argparse==1.2.1
+distribute==0.6.24
+html5lib==0.95
+mock==1.0.1
+pyPdf==1.13
+reportlab==2.6
+wsgiref==0.1.2
+xhtml2pdf==0.0.4
