@@ -19,7 +19,7 @@ _LAST_NAME = 'Apellido'
 _COURSE_NAME = 'Curso'
 _TOOK_EXAM = 'Examen'
 
-PDF_PATH = ''
+#PDF_PATH = ''
 
 
 def generador_csv(csv_file):
@@ -31,9 +31,9 @@ def generador_csv(csv_file):
         sys.exit('line %d: %s' % (reader.line_num, e))
 
 
-def generate_filename(type, student):
-    path = PDF_PATH + (
-            '/' if len(PDF_PATH) > 0 and PDF_PATH[-1] != '/' else ''
+def generate_filename(type, output_path, student):
+    path = output_path + (
+            '/' if len(output_path) > 0 and output_path[-1] != '/' else ''
             )
     return "%sKleer - Certificado %s %s - %s %s.pdf" % (
         path,
@@ -64,10 +64,7 @@ def certificates_generator(
         output_path
         ):
 
-    global PDF_PATH
-    PDF_PATH = output_path
-
-    print("Procesando %s con path %s" % (students_file, PDF_PATH))
+    print("Procesando %s con path %s" % (students_file, output_path))
     students = generador_csv(open(students_file))
     attended_cert = Certificate(
             output_path=output_path,
@@ -107,7 +104,7 @@ class Certificate():
         return self.output
 
     def generate(self, **kws):
-        output_file = generate_filename(self.type, kws)
+        output_file = generate_filename(self.type, self.output_path, kws)
         self.replace_variables(**kws)
         pdf = pisa.CreatePDF(
                 StringIO.StringIO(self.output),

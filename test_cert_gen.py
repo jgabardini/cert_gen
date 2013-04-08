@@ -15,6 +15,13 @@ from cert_gen import Certificate
 
 class TestGeneradorCertificaciones(unittest.TestCase):
 
+    def setUp(self):
+        self.un_asistente = {
+                "Apellido": "Perez",
+                "Nombre": "Juan",
+                "Curso": "Un curso"
+            }
+
     def test_generador_csv(self):
         a, b = '1,2,3', '4,5,6'
         for r, e in zip(
@@ -24,18 +31,18 @@ class TestGeneradorCertificaciones(unittest.TestCase):
             self.assertEqual(r, e)
 
     def test_genera_nombres(self):
-        filename = generate_filename(
-            "Asistencia",
-            {
-                "Apellido": "Perez",
-                "Nombre": "Juan",
-                "Curso": "Introduccion a Scrum"
-            }
-        )
+        filename = generate_filename("Asistencia", '', self.un_asistente)
         self.assertEqual(
             filename,
-            "Kleer - Certificado Asistencia Introduccion a Scrum" +
+            "Kleer - Certificado Asistencia Un curso" +
             " - Juan Perez.pdf"
+            )
+
+    def test_genera_nombres(self):
+        filename = generate_filename("Asistencia", 'pepe', self.un_asistente)
+        self.assertEqual(
+            filename,
+            "pepe/Kleer - Certificado Asistencia Un curso - Juan Perez.pdf"
             )
 
     def test_no_tiene_columna_examen(self):
@@ -100,7 +107,7 @@ class TestCertificate(unittest.TestCase):
 
     def test_generate_create_a_pdf(self):
         self.certificate.template = self.HTMLTEST
-        out = generate_filename(self.certificate.type, self.student)
+        out = generate_filename(self.certificate.type, '', self.student)
         self.certificate.output_file = out
         if os.path.isfile(out):
             os.remove(out)
