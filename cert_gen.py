@@ -19,8 +19,6 @@ _LAST_NAME = 'Apellido'
 _COURSE_NAME = 'Curso'
 _TOOK_EXAM = 'Examen'
 
-#PDF_PATH = ''
-
 
 def generador_csv(csv_file):
     reader = csv.DictReader(csv_file)
@@ -44,6 +42,10 @@ def generate_filename(type, output_path, student):
     )
 
 
+def sanitize_dict(d):
+    return {k.strip():v for (k, v) in d.iteritems()}
+
+
 def all_students_certificates(students, attended_cert, certified_cert):
     """
     Generate one or two pdf for each student
@@ -52,9 +54,10 @@ def all_students_certificates(students, attended_cert, certified_cert):
         two html templates
     """
     for student in students:
-        attended_cert.generate(**student)
-        if _TOOK_EXAM in student and student[_TOOK_EXAM].lower() == "si":
-            certified_cert.generate(**student)
+        clean_s = sanitize_dict(student)
+        attended_cert.generate(**clean_s)
+        if _TOOK_EXAM in clean_s and clean_s[_TOOK_EXAM].lower() == "si":
+            certified_cert.generate(**clean_s)
 
 
 def certificates_generator(

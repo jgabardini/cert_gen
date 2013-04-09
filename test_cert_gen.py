@@ -59,6 +59,17 @@ class TestGeneradorCertificaciones(unittest.TestCase):
         self.assertTrue(attended_cert.generate.called)
         self.assertFalse(certified_cert.generate.called)
 
+    def test_encabezamiento_con_espacio(self):
+        students = [{
+            ' Curso ': 'lindo',
+            ' Nombre ': 'pepe',
+            ' Apellido ': 'garcia'
+        }]
+        attended_cert = Certificate()
+        all_students_certificates(students, attended_cert, None)
+        self.assertTrue(True)
+
+
 
 ### Unit Tests ####
 
